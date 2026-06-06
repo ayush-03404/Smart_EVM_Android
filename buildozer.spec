@@ -9,7 +9,7 @@ source.include_exts = py,png,jpg,kv,atlas
 
 version = 1.0.0
 
-requirements = python3,kivy==2.3.0,kivymd==1.2.0,websockets,openpyxl,pillow,et_xmlfile
+requirements = python3,kivy==2.3.0,kivymd==1.2.0,websockets,openpyxl,pillow
 
 orientation = landscape
 
@@ -19,19 +19,11 @@ android.permissions = INTERNET,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE,ACCE
 
 android.api = 33
 android.minapi = 21
-android.ndk = 25b
-android.sdk = 33
 android.accept_sdk_license = True
 
 android.arch = arm64-v8a
 
 android.allow_backup = True
-
-# App icon (uses default kivy icon if not present)
-# icon.filename = %(source.dir)s/icon.png
-
-# Presplash
-# presplash.filename = %(source.dir)s/presplash.png
 
 android.logcat_filters = *:S python:D
 
