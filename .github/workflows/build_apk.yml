@@ -21,30 +21,33 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git zip unzip wget lld build-essential \
-            libssl-dev libffi-dev python3-dev autoconf automake libtool \
-            pkg-config libltdl-dev
+          sudo apt-get install -y \
+            git zip unzip wget lld \
+            build-essential libssl-dev libffi-dev \
+            python3-dev autoconf automake libtool \
+            pkg-config libltdl-dev cmake
 
       - name: Install buildozer
-        run: pip install buildozer cython
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install buildozer==1.5.0 cython==0.29.37
 
-      - name: Cache Buildozer
+      - name: Cache Buildozer global dir
         uses: actions/cache@v4
         with:
           path: ~/.buildozer
-          key: buildozer-${{ hashFiles('**/buildozer.spec') }}
+          key: ${{ runner.os }}-buildozer-ndk25b-${{ hashFiles('**/buildozer.spec') }}
+          restore-keys: |
+            ${{ runner.os }}-buildozer-ndk25b-
 
       - name: Build APK
-        env:
-          ANDROIDSDK: /usr/local/lib/android/sdk
-          ANDROIDNDK: /usr/local/lib/android/sdk/ndk/27.3.13750724
-          ANDROIDAPI: "33"
-          ANDROIDMINAPI: "21"
         run: |
+          # Wipe ALL system Android env vars so buildozer uses its own NDK 25b
+          unset ANDROID_HOME ANDROID_SDK_ROOT ANDROID_NDK_HOME \
+                ANDROID_NDK_ROOT ANDROID_NDK ANDROID_NDK_LATEST_HOME
           SPEC_DIR=$(dirname $(find . -name "buildozer.spec" | head -1))
-          echo "Building in: $SPEC_DIR"
+          echo "Building from: $SPEC_DIR"
           cd "$SPEC_DIR"
-          unset ANDROID_NDK_HOME ANDROID_NDK_ROOT ANDROID_NDK_LATEST_HOME
           buildozer android debug
 
       - name: Upload APK
