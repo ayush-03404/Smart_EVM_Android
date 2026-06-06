@@ -12,8 +12,8 @@ jobs:
       - name: Cache Buildozer global dir
         uses: actions/cache@v4
         with:
-          path: SmartEVM_Android/.buildozer
-          key: ${{ runner.os }}-buildozer-${{ hashFiles('SmartEVM_Android/buildozer.spec') }}
+          path: .buildozer
+          key: ${{ runner.os }}-buildozer-${{ hashFiles('buildozer.spec') }}
           restore-keys: |
             ${{ runner.os }}-buildozer-
 
@@ -22,7 +22,7 @@ jobs:
         id: buildozer
         with:
           command: buildozer android debug
-          workdir: SmartEVM_Android
+          workdir: .
           buildozer_version: stable
 
       - name: Upload APK
