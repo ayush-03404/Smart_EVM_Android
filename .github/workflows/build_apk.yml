@@ -22,7 +22,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y git zip unzip wget lld build-essential \
-            libssl-dev libffi-dev python3-dev autoconf automake libtool pkg-config
+            libssl-dev libffi-dev python3-dev autoconf automake libtool \
+            pkg-config libltdl-dev
 
       - name: Install buildozer
         run: pip install buildozer cython
@@ -34,11 +35,16 @@ jobs:
           key: buildozer-${{ hashFiles('**/buildozer.spec') }}
 
       - name: Build APK
+        env:
+          ANDROIDSDK: /usr/local/lib/android/sdk
+          ANDROIDNDK: /usr/local/lib/android/sdk/ndk/27.3.13750724
+          ANDROIDAPI: "33"
+          ANDROIDMINAPI: "21"
         run: |
-          find . -name "buildozer.spec" | head -5
           SPEC_DIR=$(dirname $(find . -name "buildozer.spec" | head -1))
           echo "Building in: $SPEC_DIR"
           cd "$SPEC_DIR"
+          unset ANDROID_NDK_HOME ANDROID_NDK_ROOT ANDROID_NDK_LATEST_HOME
           buildozer android debug
 
       - name: Upload APK
