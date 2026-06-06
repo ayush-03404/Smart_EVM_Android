@@ -1,0 +1,35 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache .buildozer
+        uses: actions/cache@v4
+        with:
+          path: .buildozer
+          key: ${{ runner.os }}-p4a-v2023.09.16-${{ hashFiles('buildozer.spec') }}
+          restore-keys: |
+            ${{ runner.os }}-p4a-v2023.09.16-
+
+      - name: Build APK via Kivy Docker image
+        run: |
+          docker run --rm \
+            -v "$(pwd):/home/user/hostcwd" \
+            ghcr.io/kivy/buildozer:latest \
+            android debug
+
+      - name: Fix file permissions
+        run: sudo chown -R $USER:$USER bin/ .buildozer/ 2>/dev/null || true
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SmartEVM-APK
+          path: bin/*.apk
+          if-no-files-found: error
